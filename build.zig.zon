@@ -1,0 +1,21 @@
+.{
+    .name = "paho_mqtt_zig",
+    .version = "1.0.0",
+    .minimum_zig_version = "0.12.0",
+    .dependencies = .{
+        .paho_mqtt_c = .{
+            .url = "https://github.com/eclipse/paho.mqtt.c/archive/refs/tags/v1.3.13.tar.gz",
+            .hash = "12206573b2adda49fafa73b00ecdd4d91013eda8578d37e6ac73882125dd2a9a2ca9",
+        },
+        .openssl = .{
+            .url = "https://github.com/allyourcodebase/openssl/archive/refs/tags/3.3.1-1.tar.gz",
+            .hash = "12207c40cefa38fe90e4230dfba2e5c76b37e1ee36602512cad8ff0501f892002a65",
+            .lazy = true,
+        },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
