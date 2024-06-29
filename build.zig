@@ -22,7 +22,17 @@ pub fn build(b: *std.Build) void {
     config.addOption(bool, "high_perf_mode", high_perf_mode);
     module.addOptions("config", config);
 
-    const dep_paho_mqtt_c = b.dependency("paho_mqtt_c", .{});
+    if (b.systemIntegrationOption("paho-mqtt-c", .{})) {
+        const mqtt_lib_name = b.fmt("paho-mqtt{s}{s}", .{
+            if (mode == .sync) "c" else "a",
+            if (enable_ssl) "s" else "",
+        });
+        module.linkSystemLibrary(mqtt_lib_name, .{});
+        if (enable_ssl) module.linkSystemLibrary("ssl", .{});
+        return;
+    }
+
+    const dep_paho_mqtt_c = b.lazyDependency("paho_mqtt_c", .{}) orelse return;
     const lib_paho_mqtt_c = b.addStaticLibrary(.{
         .name = "paho_mqtt_c",
         .target = target,
