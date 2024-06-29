@@ -8,9 +8,11 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
 
     const Mode = enum { sync, @"async" };
-    const mode = b.Option(Mode, "client_mode", "Select either sync or async client") orelse .sync;
+    const mode = b.option(Mode, "client_mode", "Select either sync or async client") orelse .sync;
     const enable_ssl = b.option(bool, "enable_ssl", "Link OpenSSL for TLS encryption") orelse false;
     const high_perf_mode = b.option(bool, "high_perf_mode", "Disable tracing and heap tracking") orelse true;
+    const pie = b.option(bool, "pie", "Produce a Position Independent Executable") orelse true;
+    const strip = b.option(bool, "strip", "Omit debug information") orelse false;
 
     const module = b.addModule("paho_mqtt_zig", .{
         .root_source_file = b.path("src/common.zig"),
