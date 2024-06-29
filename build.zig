@@ -13,6 +13,10 @@ pub fn build(b: *std.Build) void {
 
     const module = b.addModule("paho_mqtt_zig", .{
         .root_source_file = b.path("src/common.zig"),
+        .target = target,
+        .optimize = optimize,
+        .pic = pie,
+        .strip = strip,
     });
 
     const config = b.addOptions();
@@ -20,6 +24,8 @@ pub fn build(b: *std.Build) void {
     config.addOption(bool, "enable_ssl", enable_ssl);
     config.addOption(bool, "high_perf_mode", high_perf_mode);
     module.addOptions("config", config);
+
+    const ssl_system_integration = b.systemIntegrationOption("ssl", .{});
 
     if (b.systemIntegrationOption("paho-mqtt-c", .{})) {
         const mqtt_lib_name = b.fmt("paho-mqtt{s}{s}", .{
@@ -109,20 +115,19 @@ pub fn build(b: *std.Build) void {
         });
         lib_paho_mqtt_c.root_module.addCMacro("PAHO_MQTT_STATIC", "1");
         if (high_perf_mode) lib_paho_mqtt_c.root_module.addCMacro("HIGH_PERFORMANCE", "1");
-        if (enable_ssl) lib_paho_mqtt_c.root_module.addCMacro("OPENSSL", "1");
-    }
 
-    const ssl_system_integration = b.systemIntegrationOption("ssl", .{});
-    if (enable_ssl) {
-        if (ssl_system_integration) {
-            module.linkSystemLibrary("ssl", .{});
-        } else {
-            const opts = .{ .target = target, .optimize = optimize };
-            const dep_openssl = b.lazyDependency("openssl", opts) orelse return;
-            var openssl_artifact = dep_openssl.artifact("openssl");
-            openssl_artifact.root_module.pic = pie;
-            openssl_artifact.root_module.strip = strip;
-            module.linkLibrary(openssl_artifact);
+        if (enable_ssl) {
+            if (ssl_system_integration) {
+                lib_paho_mqtt_c.linkSystemLibrary("ssl");
+            } else {
+                const opts = .{ .target = target, .optimize = optimize };
+                const dep_openssl = b.lazyDependency("openssl", opts) orelse return;
+                var openssl_artifact = dep_openssl.artifact("openssl");
+                openssl_artifact.root_module.pic = pie;
+                openssl_artifact.root_module.strip = strip;
+                lib_paho_mqtt_c.linkLibrary(openssl_artifact);
+                lib_paho_mqtt_c.addIncludePath(dep_openssl.path("include"));
+            }
         }
     }
 }

@@ -9,7 +9,7 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    exe.root_module.addImport("paho_mqtt_zig", ziglua.module("paho_mqtt_zig"));
+    exe.root_module.addImport("paho_mqtt_zig", paho_mqtt_zig.module("paho_mqtt_zig"));
 }
 ```
 
