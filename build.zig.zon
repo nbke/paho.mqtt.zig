@@ -15,6 +15,7 @@
         },
     },
     .paths = .{
+        "LICENSE",
         "build.zig",
         "build.zig.zon",
         "src",

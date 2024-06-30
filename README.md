@@ -27,3 +27,6 @@ const paho_mqtt_zig = b.dependency("paho_mqtt_zig", .{
     .enable_ssl = true,
 });
 ```
+
+## License
+Eclipse Public License v2, same as paho.mqtt.c
