@@ -1,6 +1,6 @@
 .{
     .name = "paho_mqtt_zig",
-    .version = "1.0.0",
+    .version = "1.3.13",
     .minimum_zig_version = "0.12.0",
     .dependencies = .{
         .paho_mqtt_c = .{
