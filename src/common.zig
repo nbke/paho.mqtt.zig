@@ -225,7 +225,13 @@ pub fn errno(rc: c_int) LibError!void {
         -15 => error.BadMqttOption,
         -16 => error.WrongMqttVersion,
         -17 => error.ZeroLenWillTopic,
-        else => unreachable,
+        else => {
+            if (std.debug.runtime_safety) {
+                std.debug.print("unexpected errno: {d}\n", .{rc});
+                std.debug.dumpCurrentStackTrace(null);
+            }
+            return error.Failure;
+        },
     };
 }
 
@@ -337,6 +343,12 @@ pub fn reason(code: MqttReasonCode) Error!SuccessReason {
         160 => error.MaximumConnectTime,
         161 => error.SubscriptionIdentifiersNotSupported,
         162 => error.WildcardSubscriptionNotSupported,
-        else => unreachable,
+        else => {
+            if (std.debug.runtime_safety) {
+                std.debug.print("unexpected failure reason: {d}\n", .{rc});
+                std.debug.dumpCurrentStackTrace(null);
+            }
+            return error.Failure;
+        },
     };
 }
