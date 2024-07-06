@@ -117,6 +117,7 @@ pub fn build(b: *std.Build) void {
         if (high_perf_mode) lib_paho_mqtt_c.root_module.addCMacro("HIGH_PERFORMANCE", "1");
 
         if (enable_ssl) {
+            lib_paho_mqtt_c.root_module.addCMacro("OPENSSL", "1");
             if (ssl_system_integration) {
                 lib_paho_mqtt_c.linkSystemLibrary("ssl");
             } else {
