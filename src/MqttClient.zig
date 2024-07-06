@@ -1,5 +1,5 @@
+const std = @import("std");
 const common = @import("common.zig");
-const errno = common.errno;
 const InitOptions = common.InitOptions;
 const LibError = common.LibError;
 const MqttMessage = common.MqttMessage;
@@ -84,6 +84,34 @@ extern fn MQTTClient_setCallbacks(handle: Handle, context: ?*anyopaque, cl: ?*co
 
 extern fn MQTTClient_freeMessage(msg: **MqttMessage) callconv(.C) void;
 extern fn MQTTClient_free(ptr: *anyopaque) callconv(.C) void;
+
+pub fn errno(rc: c_int) LibError!void {
+    return switch (rc) {
+        0 => {},
+        -1 => error.Failure,
+        -2 => error.Persistance,
+        -3 => error.Disconnected,
+        -4 => error.MaxMsgInflight,
+        -5 => error.BadUTF8Str,
+        -6 => error.NullParam,
+        -7 => error.TopicNameTruncated,
+        -8 => error.BadStructure,
+        -9 => error.BadQoS,
+        -10 => error.SSLNotSupported,
+        -11 => error.BadMqttVersion,
+        -14 => error.BadProtocol,
+        -15 => error.BadMqttOption,
+        -16 => error.WrongMqttVersion,
+        -17 => error.ZeroLenWillTopic,
+        else => {
+            if (std.debug.runtime_safety) {
+                std.debug.print("unexpected errno: {d}\n", .{rc});
+                std.debug.dumpCurrentStackTrace(null);
+            }
+            return error.Failure;
+        },
+    };
+}
 
 pub fn globalInit(init_opt: *InitOptions) void {
     MQTTClient_global_init(init_opt);

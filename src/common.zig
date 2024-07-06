@@ -10,6 +10,11 @@ pub const MqttClient = if (config.mode == .sync) @import("MqttClient.zig")
 pub const MqttAsync = if (config.mode == .@"async") @import("MqttAsync.zig")
     else @compileError("Sync client was selected at build time");
 
+const client_impl = switch (config.mode) {
+    .sync => MqttClient,
+    .@"async" => MqttAsync,
+};
+
 pub const MQTTVersion = enum(c_int) {
     default = 0,
     v3_1 = 3,
@@ -207,35 +212,20 @@ pub const LibError = error{
     WrongMqttVersion,
     // 0 length will topic on connect
     ZeroLenWillTopic,
+    // All 65535 MQTT msgids are being used
+    NoMoreMsgIDs,
+    // the request is being discarded when not complete
+    OperationIncomplete,
+    // no more messages can be buffered
+    MaxBufferedMessages,
+    // connect or disconnect command ignored because there is already a connect
+    // or disconnect command at the head of the list waiting to be processed.
+    // Use the onSuccess/onFailure callbacks to wait for the previous connect
+    // or disconnect command to be complete.
+    CommandIgnored,
+    // maxBufferedMessages in the connect options must be >= 0
+    InvalidMaxBuffered,
 };
-
-pub fn errno(rc: c_int) LibError!void {
-    return switch (rc) {
-        0 => {},
-        -1 => error.Failure,
-        -2 => error.Persistance,
-        -3 => error.Disconnected,
-        -4 => error.MaxMsgInflight,
-        -5 => error.BadUTF8Str,
-        -6 => error.NullParam,
-        -7 => error.TopicNameTruncated,
-        -8 => error.BadStructure,
-        -9 => error.BadQoS,
-        -10 => error.SSLNotSupported,
-        -11 => error.BadMqttVersion,
-        -14 => error.BadProtocol,
-        -15 => error.BadMqttOption,
-        -16 => error.WrongMqttVersion,
-        -17 => error.ZeroLenWillTopic,
-        else => {
-            if (std.debug.runtime_safety) {
-                std.debug.print("unexpected errno: {d}\n", .{rc});
-                std.debug.dumpCurrentStackTrace(null);
-            }
-            return error.Failure;
-        },
-    };
-}
 
 pub const MqttReasonCode = enum(c_int) {
     _,
@@ -297,7 +287,7 @@ pub fn reason(code: MqttReasonCode) Error!SuccessReason {
 
     // error codes smaller than 0 are library errors
     if (rc < 0) {
-        try errno(rc);
+        try client_impl.errno(rc);
         unreachable;
     }
 

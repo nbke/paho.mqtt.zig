@@ -1,5 +1,5 @@
+const std = @import("std");
 const common = @import("common.zig");
-const errno = common.errno;
 const Error = common.Error;
 const InitOptions = common.InitOptions;
 const LibError = common.LibError;
@@ -212,6 +212,38 @@ extern fn MQTTAsync_free(ptr: *anyopaque) callconv(.C) void;
 extern fn MQTTAsync_setTraceLevel(level: TraceLevel) callconv(.C) void;
 const TraceCallback = fn (level: TraceLevel, message: [*:0]u8) callconv(.C) void;
 extern fn MQTTAsync_setTraceCallback(callback: *const TraceCallback) callconv(.C) void;
+
+pub fn errno(rc: c_int) LibError!void {
+    return switch (rc) {
+        0 => {},
+        -1 => error.Failure,
+        -2 => error.Persistance,
+        -3 => error.Disconnected,
+        -4 => error.MaxMsgInflight,
+        -5 => error.BadUTF8Str,
+        -6 => error.NullParam,
+        -7 => error.TopicNameTruncated,
+        -8 => error.BadStructure,
+        -9 => error.BadQoS,
+        -10 => error.NoMoreMsgIDs,
+        -11 => error.OperationIncomplete,
+        -12 => error.MaxBufferedMessages,
+        -13 => error.SSLNotSupported,
+        -14 => error.BadProtocol,
+        -15 => error.BadMqttOption,
+        -16 => error.WrongMqttVersion,
+        -17 => error.ZeroLenWillTopic,
+        -18 => error.CommandIgnored,
+        -19 => error.InvalidMaxBuffered,
+        else => {
+            if (std.debug.runtime_safety) {
+                std.debug.print("unexpected errno: {d}\n", .{rc});
+                std.debug.dumpCurrentStackTrace(null);
+            }
+            return error.Failure;
+        },
+    };
+}
 
 pub fn globalInit(init_opt: *InitOptions) void {
     MQTTAsync_global_init(init_opt);
