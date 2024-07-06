@@ -2,6 +2,8 @@
 // https://github.com/eclipse/paho.mqtt.c/blob/6b1e202a701ffcdaa277b5644ed291287a70a7aa/src/MQTTClientPersistence.h#L69
 // The MQTTClient API is not thread safe, whereas the MQTTAsync API is.
 
+const std = @import("std");
+
 const config = @import("config");
 pub const MqttClient = if (config.mode == .sync) @import("MqttClient.zig")
     else @compileError("Async client was selected at build time");
