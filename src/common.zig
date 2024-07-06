@@ -6,7 +6,7 @@ const config = @import("config");
 pub const MqttClient = if (config.mode == .sync) @import("paho_mqtt_zig/MqttClient.zig")
     else @compileError("Async client was selected at build time");
 pub const MqttAsync = if (config.mode == .@"asnyc") @import("paho_mqtt_zig/MqttAsync.zig")
-    else @compileError("Sync client was selected at build time");;
+    else @compileError("Sync client was selected at build time");
 
 pub const MQTTVersion = enum(c_int) {
     default = 0,
