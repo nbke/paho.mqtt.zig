@@ -3,9 +3,9 @@
 // The MQTTClient API is not thread safe, whereas the MQTTAsync API is.
 
 const config = @import("config");
-pub const MqttClient = if (config.mode == .sync) @import("paho_mqtt_zig/MqttClient.zig")
+pub const MqttClient = if (config.mode == .sync) @import("MqttClient.zig")
     else @compileError("Async client was selected at build time");
-pub const MqttAsync = if (config.mode == .@"asnyc") @import("paho_mqtt_zig/MqttAsync.zig")
+pub const MqttAsync = if (config.mode == .@"asnyc") @import("MqttAsync.zig")
     else @compileError("Sync client was selected at build time");
 
 pub const MQTTVersion = enum(c_int) {
