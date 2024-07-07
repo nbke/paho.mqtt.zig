@@ -129,6 +129,7 @@ pub const SuccessData5 = extern struct {
 };
 
 // synonym for ResponseOptions
+pub const ResponseOptions = CallOptions;
 pub const CallOptions = extern struct {
     struct_id: [4]c_char = .{ 'M', 'Q', 'T', 'R' },
     struct_version: c_int = 1,
@@ -205,6 +206,10 @@ extern fn MQTTAsync_setDisconnected(handle: Handle, context: ?*anyopaque, co: *c
 
 extern fn MQTTAsync_waitForCompletion(handle: Handle, dt: AsyncToken, timeout: c_ulong) callconv(.C) c_int;
 extern fn MQTTAsync_sendMessage(handle: Handle, destinationName: [*:0]const u8, msg: *const MqttMessage, response: *CallOptions) callconv(.C) c_int;
+extern fn MQTTAsync_subscribe(handle: Handle, topic: [*:0]const u8, qos: QoS, response: *ResponseOptions) callconv(.C) c_int;
+extern fn MQTTAsync_subscribeMany(handle: Handle, count: c_int, topic: [*][*:0] const u8, qos: [*]const QoS, response: *ResponseOptions) callconv(.C) c_int;
+extern fn MQTTAsync_unsubscribe(handle: Handle, topic: [*:0]const u8, response: *ResponseOptions) callconv(.C) c_int;
+extern fn MQTTAsync_unsubscribeMany(handle: Handle, count: c_int, topic: [*][*:0]const u8, response: *ResponseOptions) callconv(.C) c_int;
 
 extern fn MQTTAsync_freeMessage(msg: **MqttMessage) callconv(.C) void;
 extern fn MQTTAsync_free(ptr: *anyopaque) callconv(.C) void;
@@ -305,6 +310,22 @@ pub fn waitForCompletion(client: Self, dt: AsyncToken, timeout: c_ulong) LibErro
 
 pub fn sendMessage(client: Self, destinationName: [*:0]const u8, msg: *const MqttMessage, response: *CallOptions) LibError!void {
     return errno(MQTTAsync_sendMessage(client.handle, destinationName, msg, response));
+}
+
+pub fn subscribe(client: Self, topic: [*:0]const u8, qos: QoS, response: *ResponseOptions) LibError!void {
+    return errno(MQTTAsync_subscribe(client.handle, topic, qos, response));
+}
+
+pub fn subscribeMany(client: Self, count: c_int, topic: [*][*:0] const u8, qos: [*]const QoS, response: *ResponseOptions) LibError!void {
+    return errno(MQTTAsync_subscribeMany(client.handle, count, topic, qos, response));
+}
+
+pub fn unsubscribe(client: Self, topic: [*:0]const u8, response: *ResponseOptions) LibError!void {
+    return errno(MQTTAsync_unsubscribe(client.handle, topic, response));
+}
+
+pub fn unsubscribeMany(client: Self, count: c_int, topic: [*][*:0]const u8, response: *ResponseOptions) LibError!void {
+    return errno(MQTTAsync_unsubscribeMany(client.handle, count, topic, response));
 }
 
 pub fn freeMessage(msg: **MqttMessage) void {
