@@ -37,6 +37,16 @@ pub const Persistence = enum(c_int) {
     User = 2, // application-specific persistence mechanism
 };
 
+const PropertyType = enum(c_int) {
+    BYTE,
+    TWO_BYTE_INTEGER,
+    FOUR_BYTE_INTEGER,
+    VARIABLE_BYTE_INTEGER,
+    BINARY_DATA,
+    UTF_8_ENCODED_STRING,
+    UTF_8_STRING_PAIR,
+};
+
 const PropertyCode = enum(c_int) {
     PAYLOAD_FORMAT_INDICATOR = 1,
     MESSAGE_EXPIRY_INTERVAL = 2,
@@ -65,6 +75,17 @@ const PropertyCode = enum(c_int) {
     WILDCARD_SUBSCRIPTION_AVAILABLE = 40,
     SUBSCRIPTION_IDENTIFIERS_AVAILABLE = 41,
     SHARED_SUBSCRIPTION_AVAILABLE = 42, // value is 241
+
+    extern fn MQTTProperty_getType(value: PropertyCode) callconv(.C) c_int;
+    extern fn MQTTPropertyName(value: PropertyCode) callconv(.C) [*:0]const u8;
+
+    pub fn getType(code: @This()) PropertyType {
+        return @enumFromInt(MQTTProperty_getType(code));
+    }
+
+    pub fn name(code: @This()) [:0]const u8 {
+        return std.mem.span(MQTTPropertyName(code));
+    }
 };
 
 pub const WillOptions = extern struct {
@@ -107,7 +128,7 @@ pub const MqttProperties = extern struct {
     count: c_int = 0,
     max_count: c_int = 0,
     length: c_int = 0,
-    array: ?*MqttProperty = null,
+    array: ?[*]MqttProperty = null,
 };
 
 pub const MqttResponse = extern struct {
