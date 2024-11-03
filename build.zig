@@ -27,8 +27,8 @@ pub fn build(b: *std.Build) void {
 
     const ssl_system_integration = b.systemIntegrationOption("ssl", .{});
 
-    if (b.systemIntegrationOption("paho-mqtt-c", .{})) {
-        const mqtt_lib_name = b.fmt("paho-mqtt{s}{s}", .{
+    if (b.systemIntegrationOption("paho-mqtt", .{})) {
+        const mqtt_lib_name = b.fmt("paho-mqtt3{s}{s}", .{
             if (mode == .sync) "c" else "a",
             if (enable_ssl) "s" else "",
         });
