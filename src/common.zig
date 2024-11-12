@@ -107,8 +107,8 @@ pub const NameValue = extern struct {
 };
 
 pub const MQTTLenString = extern struct {
-    len: c_int,
-    data: [*:0]u8,
+    len: c_int = 0,
+    data: ?[*:0]const u8 = null,
 };
 
 pub const MqttProperty = extern struct {
@@ -122,6 +122,9 @@ pub const MqttProperty = extern struct {
             value: MQTTLenString,
         },
     },
+
+    extern fn MQTTProperty_write(pptr: *[*:0] const u8, prop: *MqttProperty) callconv(.C) c_int;
+    extern fn MQTTProperty_read(prop: *MqttProperty, pptr: *[*:0] const u8, enddata: [*:0]const u8) callconv(.C) c_int;
 };
 
 pub const MqttProperties = extern struct {
@@ -129,6 +132,25 @@ pub const MqttProperties = extern struct {
     max_count: c_int = 0,
     length: c_int = 0,
     array: ?[*]MqttProperty = null,
+
+    extern fn MQTTProperties_len(props: *MqttProperties) callconv(.C) c_int;
+    extern fn MQTTProperties_add(props: *MqttProperties, prop: *const MqttProperty) callconv(.C) c_int;
+    extern fn MQTTProperties_write(pptr: *[*:0] const u8, properties: *const MqttProperties) callconv(.C) c_int;
+    extern fn MQTTProperties_read(properties: *MqttProperties, pptr: *[*:0] const u8, enddata: [*:0]const u8) callconv(.C) c_int;
+    extern fn MQTTProperties_copy(props: *const MqttProperties) callconv(.C) MqttProperties;
+    extern fn MQTTProperties_hasProperty(props: *MqttProperties, propid: PropertyCode) callconv(.C) c_int;
+    extern fn MQTTProperties_propertyCount(props: *MqttProperties, propid: PropertyCode) callconv(.C) c_int;
+    extern fn MQTTProperties_getNumericValueAt(props: *MqttProperties, propid: PropertyCode, index: c_int) callconv(.C) c_int;
+    extern fn MQTTProperties_getNumericValue(props: *MqttProperties, propid: PropertyCode) callconv(.C) c_int;
+    extern fn MQTTProperties_getPropertyAt(props: *MqttProperties, propid: PropertyCode, index: c_int) callconv(.C) *MqttProperties;
+    extern fn MQTTProperties_getProperty(props: *MqttProperties, propid: PropertyCode) callconv(.C) *MqttProperties;
+
+    pub fn len(props: *const MqttProperties) c_int {
+        return MQTTProperties_len(@constCast(props));
+    }
+    pub fn add(props: *MqttProperties, prop: *const MqttProperty) c_int {
+        return MQTTProperties_add(props, prop);
+    }
 };
 
 pub const MqttResponse = extern struct {
