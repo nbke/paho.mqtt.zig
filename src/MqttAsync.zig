@@ -80,7 +80,7 @@ pub const FailureData5 = extern struct {
     struct_id: [4]c_char = .{ 'M', 'Q', 'F', 'D' },
     struct_version: c_int = 0,
     token: AsyncToken = @enumFromInt(0),
-    reasonCode: MqttReasonCode = .Success,
+    reasonCode: MqttReasonCode = @enumFromInt(0),
     properties: MqttProperties = .{},
     code: c_int = 0,
     message: ?[*:0]const u8 = null,
@@ -110,7 +110,7 @@ pub const SuccessData5 = extern struct {
     struct_id: [4]c_char = .{ 'M', 'Q', 'S', 'D' },
     struct_version: c_int = 0,
     token: AsyncToken = @enumFromInt(0),
-    reasonCode: MqttReasonCode = .Success,
+    reasonCode: MqttReasonCode = @enumFromInt(0),
     properties: MqttProperties = .{},
     alt: extern union { sub: extern struct {
         reasonCodeCount: c_int,
@@ -174,13 +174,6 @@ pub const TraceLevel = enum(c_int) {
     Error,
     Severe,
     Fatal,
-
-    pub fn to_string(self: @This()) [:0]const u8 {
-        inline for (@typeInfo(@TypeOf(self)).Enum.fields) |field| {
-            if (@intFromEnum(self) == field.value) return field.name;
-        }
-        unreachable;
-    }
 };
 
 extern fn MQTTAsync_global_init(inits: *InitOptions) callconv(.C) void;
