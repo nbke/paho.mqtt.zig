@@ -171,7 +171,7 @@ pub const MqttMessage = extern struct {
     struct_id: [4]c_char = .{ 'M', 'Q', 'T', 'M' },
     struct_version: c_int = 1,
     payloadlen: c_int,
-    payload: *anyopaque,
+    payload: ?[*]const u8,
     qos: QoS = .FireAndForget,
     retained: c_int = 0,
     dup: c_int = 0,
