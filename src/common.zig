@@ -121,8 +121,36 @@ pub const MqttProperty = extern struct {
         },
     },
 
-    extern fn MQTTProperty_write(pptr: *[*:0] const u8, prop: *MqttProperty) callconv(.C) c_int;
-    extern fn MQTTProperty_read(prop: *MqttProperty, pptr: *[*:0] const u8, enddata: [*:0]const u8) callconv(.C) c_int;
+    extern fn MQTTProperty_write(pptr: *[*:0]const u8, prop: *MqttProperty) callconv(.C) c_int;
+    extern fn MQTTProperty_read(prop: *MqttProperty, pptr: *[*:0]const u8, enddata: [*:0]const u8) callconv(.C) c_int;
+
+    pub const from_binary_data = from_utf8_str;
+    pub fn from_utf8_str(identifier: PropertyCode, text: []const u8) MqttProperty {
+        return .{ .identifier = identifier, .value = .{ .str = .{
+            .data = .{ .data = text.ptr, .len = @intCast(text.len) },
+            .value = .{},
+        } } };
+    }
+
+    pub fn from_uf8_str_pair(identifier: PropertyCode, key: []const u8, value: []const u8) MqttProperty {
+        return .{ .identifier = identifier, .value = .{ .str = .{
+            .data = .{ .data = key.ptr, .len = @intCast(key.len) },
+            .value = .{ .data = value.ptr, .len = @intCast(value.len) },
+        } } };
+    }
+
+    pub fn from_byte(identifier: PropertyCode, value: c_char) MqttProperty {
+        return .{ .identifier = identifier, .value = .{ .byte = value } };
+    }
+
+    pub fn from_2byte_int(identifier: PropertyCode, value: c_ushort) MqttProperty {
+        return .{ .identifier = identifier, .value = .{ .integer2 = value } };
+    }
+
+    pub const from_var_byte_int = from_4byte_int;
+    pub fn from_4byte_int(identifier: PropertyCode, value: c_uint) MqttProperty {
+        return .{ .identifier = identifier, .value = .{ .integer4 = value } };
+    }
 };
 
 pub const MqttProperties = extern struct {
