@@ -106,7 +106,7 @@ pub const NameValue = extern struct {
 
 pub const MQTTLenString = extern struct {
     len: c_int = 0,
-    data: ?[*:0]const u8 = null,
+    data: ?[*]const u8 = null,
 };
 
 pub const MqttProperty = extern struct {
