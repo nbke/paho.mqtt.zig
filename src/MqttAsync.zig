@@ -200,7 +200,7 @@ extern fn MQTTAsync_setDisconnected(handle: Handle, context: ?*anyopaque, co: *c
 extern fn MQTTAsync_waitForCompletion(handle: Handle, dt: AsyncToken, timeout: c_ulong) callconv(.C) c_int;
 extern fn MQTTAsync_sendMessage(handle: Handle, destinationName: [*:0]const u8, msg: *const MqttMessage, response: *CallOptions) callconv(.C) c_int;
 extern fn MQTTAsync_subscribe(handle: Handle, topic: [*:0]const u8, qos: QoS, response: *ResponseOptions) callconv(.C) c_int;
-extern fn MQTTAsync_subscribeMany(handle: Handle, count: c_int, topic: [*][*:0] const u8, qos: [*]const QoS, response: *ResponseOptions) callconv(.C) c_int;
+extern fn MQTTAsync_subscribeMany(handle: Handle, count: c_int, topic: [*][*:0]const u8, qos: [*]const QoS, response: *ResponseOptions) callconv(.C) c_int;
 extern fn MQTTAsync_unsubscribe(handle: Handle, topic: [*:0]const u8, response: *ResponseOptions) callconv(.C) c_int;
 extern fn MQTTAsync_unsubscribeMany(handle: Handle, count: c_int, topic: [*][*:0]const u8, response: *ResponseOptions) callconv(.C) c_int;
 
@@ -309,7 +309,7 @@ pub fn subscribe(client: Self, topic: [*:0]const u8, qos: QoS, response: *Respon
     return errno(MQTTAsync_subscribe(client.handle, topic, qos, response));
 }
 
-pub fn subscribeMany(client: Self, count: c_int, topic: [*][*:0] const u8, qos: [*]const QoS, response: *ResponseOptions) LibError!void {
+pub fn subscribeMany(client: Self, count: c_int, topic: [*][*:0]const u8, qos: [*]const QoS, response: *ResponseOptions) LibError!void {
     return errno(MQTTAsync_subscribeMany(client.handle, count, topic, qos, response));
 }
 

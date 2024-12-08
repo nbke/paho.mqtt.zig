@@ -5,10 +5,8 @@
 const std = @import("std");
 
 const config = @import("config");
-pub const MqttClient = if (config.mode == .sync) @import("MqttClient.zig")
-    else @compileError("Async client was selected at build time");
-pub const MqttAsync = if (config.mode == .@"async") @import("MqttAsync.zig")
-    else @compileError("Sync client was selected at build time");
+pub const MqttClient = if (config.mode == .sync) @import("MqttClient.zig") else @compileError("Async client was selected at build time");
+pub const MqttAsync = if (config.mode == .@"async") @import("MqttAsync.zig") else @compileError("Sync client was selected at build time");
 
 const client_impl = switch (config.mode) {
     .sync => MqttClient,
@@ -135,8 +133,8 @@ pub const MqttProperties = extern struct {
 
     extern fn MQTTProperties_len(props: *MqttProperties) callconv(.C) c_int;
     extern fn MQTTProperties_add(props: *MqttProperties, prop: *const MqttProperty) callconv(.C) c_int;
-    extern fn MQTTProperties_write(pptr: *[*:0] const u8, properties: *const MqttProperties) callconv(.C) c_int;
-    extern fn MQTTProperties_read(properties: *MqttProperties, pptr: *[*:0] const u8, enddata: [*:0]const u8) callconv(.C) c_int;
+    extern fn MQTTProperties_write(pptr: *[*:0]const u8, properties: *const MqttProperties) callconv(.C) c_int;
+    extern fn MQTTProperties_read(properties: *MqttProperties, pptr: *[*:0]const u8, enddata: [*:0]const u8) callconv(.C) c_int;
     extern fn MQTTProperties_copy(props: *const MqttProperties) callconv(.C) MqttProperties;
     extern fn MQTTProperties_hasProperty(props: *MqttProperties, propid: PropertyCode) callconv(.C) c_int;
     extern fn MQTTProperties_propertyCount(props: *MqttProperties, propid: PropertyCode) callconv(.C) c_int;
