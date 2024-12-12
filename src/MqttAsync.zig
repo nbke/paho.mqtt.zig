@@ -204,6 +204,8 @@ extern fn MQTTAsync_subscribeMany(handle: Handle, count: c_int, topic: [*][*:0]c
 extern fn MQTTAsync_unsubscribe(handle: Handle, topic: [*:0]const u8, response: *ResponseOptions) callconv(.C) c_int;
 extern fn MQTTAsync_unsubscribeMany(handle: Handle, count: c_int, topic: [*][*:0]const u8, response: *ResponseOptions) callconv(.C) c_int;
 
+extern fn MQTTAsync_getPendingTokens(handle: Handle, tokens: *?[*]AsyncToken) callconv(.C) c_int;
+
 extern fn MQTTAsync_freeMessage(msg: **MqttMessage) callconv(.C) void;
 extern fn MQTTAsync_free(ptr: *anyopaque) callconv(.C) void;
 
@@ -319,6 +321,10 @@ pub fn unsubscribe(client: Self, topic: [*:0]const u8, response: *ResponseOption
 
 pub fn unsubscribeMany(client: Self, count: c_int, topic: [*][*:0]const u8, response: *ResponseOptions) LibError!void {
     return errno(MQTTAsync_unsubscribeMany(client.handle, count, topic, response));
+}
+
+pub fn getPendingTokens(client: Self, tokens: *?[*]AsyncToken) LibError!void {
+    return errno(MQTTAsync_getPendingTokens(client.handle, tokens));
 }
 
 pub fn freeMessage(msg: **MqttMessage) void {
