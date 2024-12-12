@@ -117,7 +117,7 @@ pub const SuccessData5 = extern struct {
         reasonCodes: ?[*]MqttReasonCode,
     }, @"pub": extern struct {
         message: MqttMessage,
-        destinationName: [*:0]u8,
+        destinationName: ?[*:0]u8,
     }, connect: extern struct {
         serverURI: [*:0]u8,
         mqttVersion: MQTTVersion,
