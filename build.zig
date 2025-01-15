@@ -45,12 +45,17 @@ pub fn build(b: *std.Build) void {
         });
         module.linkLibrary(lib_paho_mqtt_c);
 
+        const paho_version = "1.13.4"; // TODO read files from tarball
+        const parsed_paho_version = std.SemanticVersion.parse(paho_version) catch @panic("invalid version: " ++ paho_version);
         const config_h = b.addConfigHeader(.{
             .style = .{ .cmake = dep_paho_mqtt_c.path("src/VersionInfo.h.in") },
             .include_path = "VersionInfo.h",
         }, .{
             .BUILD_TIMESTAMP = "1970-1-1",
-            .CLIENT_VERSION = "1.13.3", // TODO read files from tarball
+            .PROJECT_VERSION = paho_version,
+            .PROJECT_VERSION_MAJOR = @as(i64, @intCast(parsed_paho_version.major)),
+            .PROJECT_VERSION_MINOR = @as(i64, @intCast(parsed_paho_version.minor)),
+            .PROJECT_VERSION_PATCH = @as(i64, @intCast(parsed_paho_version.patch)),
         });
         lib_paho_mqtt_c.addConfigHeader(config_h);
 

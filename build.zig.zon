@@ -4,8 +4,8 @@
     .minimum_zig_version = "0.12.0",
     .dependencies = .{
         .paho_mqtt_c = .{
-            .url = "https://github.com/eclipse/paho.mqtt.c/archive/refs/tags/v1.3.13.tar.gz",
-            .hash = "12206573b2adda49fafa73b00ecdd4d91013eda8578d37e6ac73882125dd2a9a2ca9",
+            .url = "https://github.com/eclipse-paho/paho.mqtt.c/archive/refs/tags/v1.3.14.tar.gz",
+            .hash = "12206c60730f8328d49ef15d271b77a781936970cd4d0b5418b420b4ece5fff536f8",
             .lazy = true,
         },
         .openssl = .{
